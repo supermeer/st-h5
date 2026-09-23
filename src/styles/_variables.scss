@@ -1,0 +1,13 @@
+// _variables.scss —— SCSS 变量（仅供 SCSS 内部使用，不产生 CSS 输出）
+// 注意：全局 CSS 变量在 global.scss 和 tokens.scss 中定义
+
+// 项目主题色（用于 SCSS 函数中做颜色计算等场景）
+$theme-color: #174DFF;
+$theme-color-black: #252525;
+$theme-color-purple: #6c5ce7;
+$yellow-btn-color: rgb(253, 171, 11);
+$success-color: #34c759;
+$text-primary: #fa550f;
+$text-success: #5fb446;
+$text-warn: #ec8131;
+$text-danger: #de1c24;

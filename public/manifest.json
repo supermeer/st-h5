@@ -1,0 +1,21 @@
+{
+  "name": "星语酒馆",
+  "short_name": "星语酒馆",
+  "description": "智能角色扮演 AI 对话平台",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#15151c",
+  "theme_color": "#174DFF",
+  "lang": "zh-CN",
+  "categories": ["entertainment", "social"],
+  "icons": [
+    {
+      "src": "/icons.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

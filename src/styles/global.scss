@@ -1,0 +1,109 @@
+/**
+ * 全局样式（对应小程序 style/global.wxss + app.wxss）
+ * 包含：
+ *   - 全局 box-sizing / 字体重置
+ *   - 文字工具类
+ *   - CSS 变量（依赖 tokens.scss）
+ *   - 路由过渡动画
+ */
+
+// ============ 文字工具类（对应 .text-*）===========
+.text-primary { color: #fa550f; }
+.text-success { color: #5fb446; }
+.text-warn   { color: #ec8131; }
+.text-danger { color: #de1c24; }
+.text-title   { color: var(--text-title); }
+.text-normal  { color: var(--text-normal); }
+.text-small   { color: var(--text-small); }
+.text-minor   { color: var(--text-minor); }
+.text-border  { color: var(--text-border); }
+.text-white   { color: #fff; }
+
+// ============ 背景工具类（对应 .bg-*）===========
+.bg-primary { background-color: #fa550f; color: #fff; }
+.bg-success { background-color: #5fb446; color: #fff; }
+.bg-warn   { background-color: #ec8131; color: #fff; }
+.bg-danger { background-color: #de1c24; color: #fff; }
+.bg-title  { background-color: #282828; color: #fff; }
+.bg-normal { background-color: #5d5d5d; color: #282828; }
+.bg-small  { background-color: #9b9b9b; color: #5d5d5d; }
+.bg-minor  { background-color: #ececec; color: #5d5d5d; }
+.bg-border { background-color: #eeeeee; color: #5d5d5d; }
+
+// ============ 通用页面容器 ============
+.page-content {
+  flex: 1;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 32rpx);
+}
+.page-content-full {
+  padding-bottom: 0;
+}
+
+// ============ 聊天气泡基础样式（对应 .msg-cell）===========
+.msg-cell {
+  padding: 24rpx 18rpx;
+  font-size: 28rpx;
+  letter-spacing: 0.8rpx;
+  border-radius: 24rpx;
+}
+
+// ============ 毛玻璃效果 ============
+.blur-glass {
+  background: rgba(100, 100, 100, 0.2);
+  backdrop-filter: blur(3.8px);
+  -webkit-backdrop-filter: blur(3.8px);
+}
+
+// ============ 黄色按钮文字（对应 .yellow-btn-text）===========
+.yellow-btn-text {
+  color: rgb(253, 171, 11);
+}
+
+// ============ 全局盒模型 & 字体重置 ============
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-page);
+  color: var(--text-title);
+  // 与小程序一致的字体
+  font-family: 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', '微软雅黑', Helvetica, Arial, sans-serif;
+  font-size: 13px; /* 基准：postcss-px-to-viewport 会转换 */
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+// ============ 路由过渡动画 ============
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.page-fade-enter-from,
+.page-fade-leave-to {
+  opacity: 0;
+}
+
+// ============ 深色模式过渡 ============
+html,
+body {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}

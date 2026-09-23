@@ -1,0 +1,132 @@
+/**
+ * 全局 CSS 设计令牌（Design Tokens）
+ * 对应小程序 app.wxss 的 :root + page 选择器变量
+ *
+ * 小程序使用 rpx（375px 设计稿基准），H5 用 rem/vw 实现等价效果
+ * 换算规则：1rpx = 1px * (375/375) / 100vw = viewportWidth/100
+ * 即设计稿 375px 基准下：1rpx = 0.2667vw
+ *
+ * 由于 postcss-px-to-viewport-8-plugin 已将 px 自动转为 vw，
+ * 我们在此文件中用 px 定义，设计工具会做等价转换
+ *
+ * ========== 字号梯度（小程序的 ft-* 类）==========
+ * ft-super  = 40rpx  → 40rpx ≈ 40px base
+ * ft-main   = 36rpx  → 36px
+ * ft-normal = 32rpx  → 32px
+ * ft-assist = 28rpx  → 28px  (最常用正文)
+ * ft-minor  = 24rpx  → 24px
+ * ft-mini   = 20rpx  → 20px
+ */
+
+/* ========== 字号梯度 ========== */
+:root {
+  /* 字号：基于 375px 设计稿，1rpx = 100/375 vw ≈ 0.2667vw
+     （rpxToVw 插件会在构建时自动转换为 vw） */
+  --ft-super: 40rpx;
+  --ft-main:  36rpx;
+  --ft-normal: 32rpx;
+  --ft-assist: 28rpx;  /* 主要正文 */
+  --ft-minor: 24rpx;
+  --ft-mini:  20rpx;
+
+  /* 字号实际值（px），参考用 */
+  --font-size-super:  20px;
+  --font-size-main:   18px;
+  --font-size-normal: 16px;
+  --font-size-assist: 14px;
+  --font-size-minor:  12px;
+  --font-size-mini:   10px;
+
+  /* 字号别名（与小程序 page 保持一致） */
+  --font-size: var(--ft-assist); /* 默认正文 28rpx */
+
+  /* ========== 字重 ========== */
+  --fw-super:  800;
+  --fw-main:   600;
+  --fw-normal: 400;
+  --fw-minor:  300;
+
+  /* ========== 颜色：文字（深色主题默认白色）========== */
+  --text-title:  #282828;   /* 标题黑（浅色主题） */
+  --text-normal: #5d5d5d;   /* 正文灰 */
+  --text-small:  #9b9b9b;   /* 次要灰 */
+  --text-minor: #ececec;    /* 极浅灰（用于深色背景上的浅色文字）*/
+  --text-border:#eeeeee;    /* 边框文字 */
+  --text-white: #ffffff;
+  --text-primary: #fa550f; /* 品牌橙 */
+  --text-success: #5fb446;
+  --text-warn:   #ec8131;
+  --text-danger: #de1c24;
+
+  /* ========== 颜色：背景 ========== */
+  --bg-page:     #f8f8f8;  /* 默认页面背景（小程序 global.wxss 设定）*/
+  --bg-card:    #ffffff;
+  --bg-minor:   #ececec;
+  --bg-border:  #eeeeee;
+  --bg-title:   #282828;
+  --bg-normal:  #5d5d5d;
+  --bg-small:   #9b9b9b;
+
+  /* ========== 兼容变量 ========== */
+  --theme-color:       #174DFF;
+  --theme-color-black: #252525;
+  --desc-color:        #9b9b9b;
+  --main-color-white:  #ffffff;
+  --theme-color-purple: #6c5ce7;
+  --magic-color:       rgb(91, 0, 255);
+  --yellow-btn-color:       rgb(253, 171, 11);
+  --yellow-btn-color__disabled: rgba(253, 171, 11, 0.6);
+  --success-color:     #34c759;
+
+  /* ========== 间距 & 圆角 ========== */
+  --spacing-xs: 8rpx;
+  --spacing-sm: 16rpx;
+  --spacing-md: 24rpx;
+  --spacing-lg: 32rpx;
+  --spacing-xl: 48rpx;
+
+  --radius-sm:  8rpx;
+  --radius-md:  16rpx;
+  --radius-lg:  24rpx;
+  --radius-xl:  32rpx;
+
+  /* ========== 层级 ========== */
+  --z-dropdown:  1000;
+  --z-sticky:    1020;
+  --z-fixed:     1030;
+  --z-backdrop:  1040;
+  --z-modal:     1050;
+  --z-popover:   1060;
+  --z-tooltip:   1070;
+
+  /* ========== safearea ========== */
+  --safearea-top: env(safe-area-inset-top, 0px);
+  --safearea-bottom: env(safe-area-inset-bottom, 0px);
+  --safearea-left: env(safe-area-inset-left, 0px);
+  --safearea-right: env(safe-area-inset-right, 0px);
+
+  --tabbar-height: 74px;
+  --tabbar-height-safearea: calc(var(--tabbar-height) + var(--safearea-bottom));
+
+  --nav-height: 44px;
+  --nav-height-safearea: calc(var(--nav-height) + var(--safearea-top));
+}
+
+/* ========== 深色模式覆盖 ========== */
+html[data-theme='dark'] {
+  --text-title:  #ffffff;
+  --text-normal: rgba(255, 255, 255, 0.85);
+  --text-small:  rgba(255, 255, 255, 0.6);
+  --text-minor: #ececec;
+  --text-border:#eeeeee;
+
+  --bg-page:     #252525;
+  --bg-card:     #1f1f28;
+  --bg-minor:   rgba(255, 255, 255, 0.1);
+  --bg-border:  rgba(255, 255, 255, 0.1);
+
+  --theme-color:       #4f7bff;
+  --theme-color-purple: #8b7bff;
+  --yellow-btn-color:  #ffb84d;
+  --success-color:     #4cd97a;
+}
