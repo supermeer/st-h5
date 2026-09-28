@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { showToast } from 'vant'
-import { config } from './config'
+import { config, mockHandlers } from './config'
 
 // 创建一个 axios 实例
 const http = axios.create({
@@ -22,6 +22,38 @@ http.interceptors.request.use(
   },
   (err) => Promise.reject(err)
 )
+
+// ============ Mock 适配器：当 useMock=true 时，跳过真实请求返回本地数据 ============
+if (config.useMock) {
+  http.defaults.adapter = (cfg) => {
+    // 在 mock 模式下，cfg.url 通常已经是相对路径（去掉 baseURL 后）
+    let path = cfg.url || ''
+    // 兜底：如果还包含 baseURL，截掉
+    if (cfg.baseURL && path.startsWith(cfg.baseURL)) {
+      path = path.slice(cfg.baseURL.length)
+    }
+    // 去掉 query string 后再匹配（mockHandlers 的 key 不含 ? 后内容）
+    const purePath = path.split('?')[0]
+    const handler = mockHandlers[purePath] || mockHandlers.default
+
+    return new Promise((resolve) => {
+      const data = handler ? handler(cfg) : null
+      // 模拟网络延迟
+      setTimeout(() => {
+        resolve({
+          data: { code: 200, data, success: true, msg: 'OK', traceId: null },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: cfg,
+          request: {}
+        })
+      }, 200)
+    })
+  }
+  // eslint-disable-next-line no-console
+  console.info('[H5 Mock] 已启用本地 Mock 模式，所有 API 请求返回本地测试数据')
+}
 
 // ============ 响应拦截器：统一处理业务码 ============
 http.interceptors.response.use(

@@ -30,3 +30,9 @@ playwright/.cache
 coverage
 src/**/*.test.js
 src/**/*.spec.js
+
+# 本地环境覆盖（个人本地覆盖，不入库）
+.env.local
+.env.*.local
+
+# 注意：项目共享的环境文件 .env / .env.development / .env.test / .env.production 应提交到仓库

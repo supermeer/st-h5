@@ -99,6 +99,9 @@ function onLogin() {
       } else {
         visible.value = false
         emit('loginSuccess')
+        // 触发全局事件，让所有监听者（不限于父组件）都能感知登录成功
+        // （对应小程序中通过 westore 状态变更驱动全局响应）
+        window.dispatchEvent(new CustomEvent('h5:user-login-success', { detail: result }))
       }
     })
     .catch(() => {

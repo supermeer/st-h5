@@ -183,6 +183,7 @@ import {
 import { getGroupDetailByParams, getCurrentPlotByGroupChatId } from '@/api/group'
 import { getModelList, getGlobalModelId, setGlobalModel } from '@/api/usercenter'
 import { useRouter } from 'vue-router'
+import { formatMessage as formatMessageUtil } from '@/utils/msgHandler'
 
 const props = defineProps({
   roleInfo: {
@@ -284,13 +285,31 @@ onUnmounted(() => {
   removeKeyboardListener()
 })
 
-// 监听 plotInfo 变化
-watch(() => props.plotInfo?.id, (newVal) => {
-  if (newVal) {
-    pagination.value.plotId = newVal
-    getMessageList()
+// 监听 roleInfo.id 变化（参照小程序 observers: { 'roleInfo.id' }）
+watch(
+  () => props.roleInfo?.id,
+  (newVal) => {
+    if (newVal) {
+      getChatInfo()
+    }
   }
-})
+)
+
+// 监听 plotInfo 变化
+watch(
+  () => props.plotInfo?.id,
+  (newVal) => {
+    if (newVal) {
+      pagination.value.plotId = newVal
+      getMessageList()
+    } else {
+      // 没有 plotId 时清空消息
+      msgList.value = []
+      chatDetail.value = { ...chatDetail.value, plotId: null }
+      pagination.value = { size: 10, current: 1, plotId: null }
+    }
+  }
+)
 
 // 获取聊天信息
 async function getChatInfo() {
@@ -1037,19 +1056,20 @@ function showTabbar() {
   emit('showTabbar')
 }
 
-// 格式化消息（HTML 转换）
+// 格式化消息（HTML 转换），使用完整的 msgHandler（参照小程序 utils/msgHandler.js）
 function formatMessage(content) {
-  if (!content) return ''
-  // 简单的 Markdown 转 HTML
-  let html = content
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\n/g, '<br>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, '<code>$1</code>')
-  return html
+  try {
+    return formatMessageUtil(content)
+  } catch (e) {
+    console.error('formatMessage failed', e)
+    // 退化：仅做最小化转义
+    if (!content) return ''
+    return String(content)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>')
+  }
 }
 </script>
 
