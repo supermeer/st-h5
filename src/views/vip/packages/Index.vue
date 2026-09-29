@@ -350,7 +350,7 @@ onMounted(() => {
   box-sizing: border-box;
   background: #fff;
   border-radius: 42rpx 42rpx 0 0;
-  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(32rpx + var(--safearea-bottom));
 }
 
 .activity-tip {

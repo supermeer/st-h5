@@ -300,8 +300,10 @@ function onBottomButtonClick() {
 }
 
 function showAuthDialog() {
-  // 弹出登录弹窗
-  window.dispatchEvent(new CustomEvent('h5:show-login-modal'))
+  // 跳转到 web 登录页（由 main.js 中 setupAuthBridge 全局监听 h5:show-login-modal 处理）
+  window.dispatchEvent(new CustomEvent('h5:show-login-modal', {
+    detail: { redirect: route.fullPath }
+  }))
 }
 
 async function onShareClick() {
@@ -351,7 +353,9 @@ onMounted(async () => {
     invitationCode.value = code
     getInviteTitle()
     if (!userStore.isLogin) {
-      window.dispatchEvent(new CustomEvent('h5:show-login-modal'))
+      window.dispatchEvent(new CustomEvent('h5:show-login-modal', {
+        detail: { redirect: route.fullPath }
+      }))
     } else {
       getMenus()
     }
@@ -733,6 +737,6 @@ onUnmounted(() => {
   border: none;
   z-index: 100;
   cursor: pointer;
-  padding-bottom: calc(env(safe-area-inset-bottom));
+  padding-bottom: var(--safearea-bottom);
 }
 </style>

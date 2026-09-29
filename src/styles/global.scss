@@ -33,7 +33,7 @@
 // ============ 通用页面容器 ============
 .page-content {
   flex: 1;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 32rpx);
+  padding-bottom: calc(var(--safearea-bottom) + 32rpx);
 }
 .page-content-full {
   padding-bottom: 0;
@@ -76,7 +76,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: var(--bg-page);
+  background-color: var(--theme-color-black);
   color: var(--text-title);
   // 与小程序一致的字体
   font-family: 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', '微软雅黑', Helvetica, Arial, sans-serif;

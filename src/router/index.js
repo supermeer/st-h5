@@ -335,6 +335,14 @@ const routes = [
     meta: { title: '登录' }
   },
 
+  // ===== 注册页 =====
+  {
+    path: '/pages/register/index',
+    name: 'Register',
+    component: () => import('@/views/register/Index.vue'),
+    meta: { title: '注册账号' }
+  },
+
   // 404
   { path: '/:pathMatch(.*)*', redirect: '/pages/home/home' }
 ]

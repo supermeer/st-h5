@@ -1,58 +1,49 @@
 // system.js —— 系统信息工具（对应小程序 utils/system.js）
-// H5 没有原生状态栏；如有需要通过 env(safe-area-inset-top) 由 CSS 取值
+//
+// 【H5 实现说明】
+// H5 没有原生状态栏。安全区在 CSS 端由 tokens.scss 的 --safearea-* 变量管理，
+// 该变量通过 env(safe-area-inset-*) 实时计算，浏览器自动响应 resize/orientationchange。
+// 因此本文件不再用 DOM 测距去"测量" safearea 值，保留的工具函数只提供尺寸查询。
+//
+// 旧实现（getCssSafeAreaTop/Bottom）已废弃，保留为 stub 以防外部 import 报错。
 
 let cachedSystemInfo = null
 
 function getSystemInfoSync() {
   if (cachedSystemInfo) return cachedSystemInfo
+  const w = window.innerWidth
+  const h = window.innerHeight
+  const dpr = window.devicePixelRatio || 1
   cachedSystemInfo = {
-    screenWidth: window.innerWidth,
-    screenHeight: window.innerHeight,
-    windowWidth: window.innerWidth,
-    windowHeight: window.innerHeight,
-    pixelRatio: window.devicePixelRatio || 1,
-    // H5 没有状态栏，使用 iOS 刘海/灵动岛区域作为参考
-    statusBarHeight: getCssSafeAreaTop(),
+    screenWidth: w,
+    screenHeight: h,
+    windowWidth: w,
+    windowHeight: h,
+    pixelRatio: dpr,
+    // H5 没有原生状态栏；真实安全区由 CSS --safearea-top 提供
+    statusBarHeight: 0,
     platform: 'h5',
-    safeArea: {
-      top: getCssSafeAreaTop(),
-      bottom: window.innerHeight - getCssSafeAreaBottom(),
-      left: 0,
-      right: window.innerWidth
-    }
+    safeArea: { top: 0, bottom: h, left: 0, right: w, width: w, height: h }
   }
   return cachedSystemInfo
 }
 
+// 兼容旧调用：返回 0，业务已迁移到 CSS 变量
 function getCssSafeAreaTop() {
-  // iOS Safari 支持 env(safe-area-inset-top)
-  const tmp = document.createElement('div')
-  tmp.style.cssText =
-    'position:fixed;top:env(safe-area-inset-top);bottom:env(safe-area-inset-bottom);left:env(safe-area-inset-left);right:env(safe-area-inset-right);pointer-events:none;visibility:hidden;'
-  document.body.appendChild(tmp)
-  const rect = tmp.getBoundingClientRect()
-  document.body.removeChild(tmp)
-  return Math.max(0, Math.round(rect.top))
+  return 0
 }
-
 function getCssSafeAreaBottom() {
-  const tmp = document.createElement('div')
-  tmp.style.cssText =
-    'position:fixed;top:env(safe-area-inset-top);bottom:env(safe-area-inset-bottom);visibility:hidden;pointer-events:none;'
-  document.body.appendChild(tmp)
-  const rect = tmp.getBoundingClientRect()
-  document.body.removeChild(tmp)
-  return Math.max(0, Math.round(window.innerHeight - rect.bottom))
+  return 0
 }
 
 function getPageInfo() {
-  // 与小程序保持一致的字段命名
-  const statusBarHeight = getSystemInfoSync().statusBarHeight || 20
+  // 兼容旧调用：navHeight 仍按 44 + statusBar 估算，H5 真实高度由 CustomNav 的 CSS 决定
+  const statusBarHeight = 0
   return {
     navHeight: statusBarHeight + 44,
     statusBarHeight,
     safeAreaTop: statusBarHeight,
-    safeAreaBottom: getCssSafeAreaBottom(),
+    safeAreaBottom: 0,
     tabbarHeight: 50
   }
 }
@@ -93,10 +84,9 @@ function observeViewportChange(callback) {
     callback({
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
-      safeAreaBottom: getCssSafeAreaBottom()
+      safeAreaBottom: 0
     })
   window.addEventListener('resize', handler)
-  // 屏幕方向变化也触发
   window.addEventListener('orientationchange', handler)
   return () => {
     window.removeEventListener('resize', handler)

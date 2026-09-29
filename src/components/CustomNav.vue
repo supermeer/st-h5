@@ -1,16 +1,9 @@
 <template>
+  <!-- 占位：让 fixed 吸顶的 nav 不遮挡下方内容 -->
+  <div class="custom-nav-spacer" aria-hidden="true" />
   <div class="custom-nav" :style="navStyle" :class="{ 'custom-nav--transparent': transparent }">
-    <!-- 状态栏占位 -->
-    <div class="nav-status-bar" :style="{ height: statusBarHeight + 'px' }" />
-    <!-- 胶囊占位：参考小程序右侧胶囊按钮（约 87px）-->
-    <div
-      v-if="showCapsule"
-      class="nav-capsule-placeholder"
-      :style="{ width: capsuleWidth + 'px' }"
-      aria-hidden="true"
-    />
-    <!-- 内容区 -->
-    <div class="nav-content" :style="{ height: navContentHeight + 'px' }">
+    <!-- 内容区（自带顶部 safearea padding，避免被状态栏/刘海遮挡） -->
+    <div class="nav-content">
       <div
         class="nav-left"
         :style="{ width: leftSlotWidth + 'px', paddingLeft: leftPadding + 'px' }"
@@ -35,6 +28,13 @@
       </div>
       <div class="nav-right">
         <slot name="right" />
+        <!-- 胶囊占位：仅在显示时渲染，避免占位空间浪费 -->
+        <div
+          v-if="showCapsule"
+          class="nav-capsule-placeholder"
+          :style="{ width: capsuleWidth + 'px' }"
+          aria-hidden="true"
+        />
       </div>
     </div>
   </div>
@@ -43,7 +43,6 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { getPageInfo } from '@/utils/system'
 
 const props = defineProps({
   title: { type: String, default: '' },
@@ -66,15 +65,10 @@ const props = defineProps({
 const emit = defineEmits(['back', 'home'])
 
 const router = useRouter()
-const pageInfo = getPageInfo()
-
-const statusBarHeight = computed(() => pageInfo.statusBarHeight || 20)
-const navContentHeight = computed(() => 44)
 
 const navStyle = computed(() => ({
   background: props.bgColor || (props.transparent ? 'transparent' : props.navColor),
-  color: props.titleColor,
-  height: statusBarHeight.value + navContentHeight.value + 'px'
+  color: props.titleColor
 }))
 
 function onBack() {
@@ -91,12 +85,22 @@ function onHome() {
 
 <style lang="scss" scoped>
 .custom-nav {
-  // position: fixed;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
   box-sizing: border-box;
+  flex-shrink: 0;
+  flex-grow: 0;
+  /* 整体高度由 padding-top (safearea) + 内容 (44px) 决定，浏览器自动响应 resize/orientationchange */
+  padding-top: var(--safearea-top);
+}
+
+.custom-nav-spacer {
+  width: 100%;
+  /* 占位高度 = safearea-top + 内容 44px，与 .custom-nav 实际占位保持一致 */
+  height: var(--nav-height-safearea);
   flex-shrink: 0;
   flex-grow: 0;
 }
@@ -105,24 +109,21 @@ function onHome() {
   background: transparent !important;
 }
 
-.nav-status-bar {
-  width: 100%;
-}
-
-.nav-capsule-placeholder {
-  position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 6px);
-  right: 8px;
-  height: 32px;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .nav-content {
   display: flex;
   align-items: center;
   position: relative;
+  height: var(--nav-height);
   padding: 0;
+}
+
+.nav-capsule-placeholder {
+  /* 胶囊占位：相对于 nav-content 定位，自动跟随顶部安全区
+     （不需要再算 env()，已经被父元素的 padding-top 推到正确位置）*/
+  height: 32px;
+  pointer-events: none;
+  z-index: 0;
+  margin-left: auto;
 }
 
 .nav-left {

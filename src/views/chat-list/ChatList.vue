@@ -16,7 +16,7 @@ import CustomNav from '@/components/CustomNav.vue'
   min-height: 100vh;
   background-color: var(--theme-color-black);
   color: #fff;
-  padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(140px + var(--safearea-bottom));
 }
 .chatlist-page :deep(.van-empty) {
   padding-top: 60vw;

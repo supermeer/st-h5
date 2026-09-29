@@ -339,7 +339,7 @@ async function exportCircle() {
   display: flex;
   gap: 16px;
   padding: 24px 32px;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  padding-bottom: calc(24px + var(--safearea-bottom));
   background: #000;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }

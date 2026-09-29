@@ -147,7 +147,7 @@ function author() {
   min-height: 100vh;
   background: linear-gradient(180deg, #111827 0%, #050010 40%, #050010 100%);
   color: #fff;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: var(--safearea-bottom);
 }
 
 .nav-title {

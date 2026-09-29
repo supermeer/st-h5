@@ -319,7 +319,7 @@ function onSubmit() {
   background: rgba(255, 255, 255, 0.05);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 24rpx;
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(24rpx + var(--safearea-bottom));
   max-height: 400rpx;
   overflow-y: auto;
   
@@ -370,7 +370,7 @@ function onSubmit() {
 
 .save-bar {
   padding: 24rpx;
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(24rpx + var(--safearea-bottom));
   background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(20px);
   

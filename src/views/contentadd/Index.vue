@@ -458,7 +458,7 @@ async function generateContent() {
   z-index: 100;
   display: flex;
   align-items: center;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  padding-bottom: calc(12px + var(--safearea-bottom));
 }
 
 .btn-history {

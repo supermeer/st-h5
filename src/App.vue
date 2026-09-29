@@ -1,7 +1,5 @@
 <template>
   <div id="app-root">
-    <!-- 全局 Auth 弹窗 -->
-    <AuthDialog v-model="authVisible" @login-success="onLoginSuccess" />
     <!-- 页面内容 -->
     <router-view v-slot="{ Component, route }">
       <transition :name="route.meta?.transition || 'page-fade'" mode="out-in">
@@ -14,29 +12,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import AuthDialog from '@/components/AuthDialog.vue'
-import CustomTabBar from '@/components/CustomTabBar.vue'
-import { useUserStore } from '@/store/user'
 
 const route = useRoute()
-const userStore = useUserStore()
-const authVisible = ref(false)
 
-// 监听需要登录的事件
-window.addEventListener('h5:show-login-modal', () => {
-  authVisible.value = true
-})
-
-// 401 时自动弹出
-window.addEventListener('h5:auth-required', () => {
-  authVisible.value = true
-})
-
-function onLoginSuccess() {
-  authVisible.value = false
-}
+// h5:show-login-modal / h5:auth-required 的统一跳转逻辑已移至
+// src/utils/auth-bridge.js（在 main.js 启动时通过 setupAuthBridge 注册）
+// AuthDialog 组件保留在 src/components/AuthDialog.vue，由各页面按需引入，
+// 不再在 App.vue 中全局挂载。
 </script>
 
 <style lang="scss">

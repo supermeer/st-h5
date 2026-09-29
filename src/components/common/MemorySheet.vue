@@ -118,7 +118,7 @@ defineExpose({ show, hide })
 }
 
 .sheet-content {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: var(--safearea-bottom);
 }
 
 .sheet-header {

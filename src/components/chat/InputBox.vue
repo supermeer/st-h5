@@ -59,9 +59,9 @@
     <!-- 主输入区域 -->
     <div class="input-area" :class="{ 'with-keyboard': keyboardHeight > 0 }">
       <!-- 工具栏切换按钮 -->
-      <div class="tool-toggle" @click="toggleBoard">
+      <!-- <div class="tool-toggle" @click="toggleBoard">
         <span>{{ showBoard ? '📤' : '📎' }}</span>
-      </div>
+      </div> -->
 
       <!-- 文本输入框 -->
       <div class="input-wrap">
@@ -73,7 +73,6 @@
           :maxlength="2000"
           autosize
           rows="1"
-          show-word-limit
           @blur="onBlur"
           @focus="onFocus"
           @input="onInput"
@@ -316,8 +315,6 @@ function removeImage(idx) {
 
 <style lang="scss" scoped>
 .input-box-wrapper {
-  background: #fff;
-  border-top: 1px solid #eee;
 
   &.disabled {
     opacity: 0.6;
@@ -449,30 +446,32 @@ function removeImage(idx) {
   min-width: 0;
 
   :deep(.van-field) {
-    padding: 12rpx 16rpx;
-    background: #f5f5f5;
+    padding: 6rpx 8rpx;
+    background: rgba(100, 100, 100, 0.2);
+    backdrop-filter: blur(3.8px);
+    -webkit-backdrop-filter: blur(3.8px);
     border-radius: 36rpx;
 
     .van-field__control {
-      font-size: 30rpx;
+      font-size: 16rpx;
       line-height: 1.5;
     }
 
     .van-field__word-limit {
-      font-size: 22rpx;
+      font-size: 14rpx;
     }
   }
 }
 
 .send-btn {
-  width: 120rpx;
-  height: 72rpx;
+  width: 60rpx;
+  height: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #ccc;
-  border-radius: 36rpx;
-  font-size: 28rpx;
+  border-radius: 20rpx;
+  font-size: 14rpx;
   color: #fff;
   font-weight: 500;
   flex-shrink: 0;

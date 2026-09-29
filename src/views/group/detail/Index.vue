@@ -857,7 +857,7 @@ async function onUnfollow() {
   display: flex;
   gap: 24rpx;
   padding: 24rpx;
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(24rpx + var(--safearea-bottom));
   background: rgba(37, 37, 37, 0.95);
   backdrop-filter: blur(20px);
   z-index: 50;

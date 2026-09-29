@@ -405,7 +405,7 @@ function onSaveImage() {
 }
 
 .action-footer {
-  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  padding-bottom: calc(24px + var(--safearea-bottom));
 }
 
 .action-buttons {

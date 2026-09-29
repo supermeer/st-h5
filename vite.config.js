@@ -39,7 +39,7 @@ export default defineConfig({
     // PWA：生成 manifest + Service Worker (Workbox)
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      includeAssets: ['favicon.jpg', 'icons.svg'],
       manifest: {
         name: '星语酒馆',
         short_name: '星语酒馆',

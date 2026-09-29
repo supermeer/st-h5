@@ -39,7 +39,7 @@
     </div>
 
     <div class="scroll-content" ref="scrollRef">
-      <div class="voice-list" :style="{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 160rpx)' }">
+      <div class="voice-list" :style="{ paddingBottom: 'calc(var(--safearea-bottom) + 160rpx)' }">
         <div v-if="!voiceList.length" class="empty-state">
           <img class="empty-image" :src="backgroundPlaceholder" alt="">
           <p class="empty-text">{{ emptyTip }}</p>
@@ -623,7 +623,7 @@ function onSaveSettings() {
   display: flex;
   gap: 24rpx;
   padding: 24rpx;
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(24rpx + var(--safearea-bottom));
   background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(20px);
   z-index: 50;

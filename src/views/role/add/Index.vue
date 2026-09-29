@@ -813,7 +813,7 @@ async function onSubmit() {
   left: 0;
   right: 0;
   padding: 24rpx;
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(24rpx + var(--safearea-bottom));
   background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(20px);
   z-index: 50;
@@ -849,7 +849,7 @@ async function onSubmit() {
 }
 
 .tag-selector-panel {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: var(--safearea-bottom);
 }
 
 .tag-selector-header {

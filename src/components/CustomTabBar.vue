@@ -1,6 +1,6 @@
 <template>
   <div v-show="visible" class="custom-tab-bar">
-    <div class="tab-bar-container" :style="{ paddingBottom: safeBottom + 'px' }">
+    <div class="tab-bar-container">
       <div
         v-for="(item, index) in list"
         :key="item.text || item.type"
@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import CreateSelectDialog from '@/components/dialogs/CreateSelectDialog.vue'
 
@@ -44,6 +44,19 @@ const props = defineProps({
   active: { type: Number, default: 0 },
   visible: { type: Boolean, default: true }
 })
+
+// 本地受控的 visible：与 props.visible 双向同步，
+// 同时响应窗口事件 h5:hide-tabbar / h5:show-tabbar，
+// 这样 Chat/InputBox 在展开/收起工具栏时可以让 TabBar 真正隐藏/显示。
+const localVisible = ref(props.visible)
+const visible = computed(() => localVisible.value && props.visible)
+
+watch(
+  () => props.visible,
+  (v) => {
+    localVisible.value = v
+  }
+)
 
 const router = useRouter()
 const route = useRoute()
@@ -83,12 +96,6 @@ const list = [
 
 const activeColor = '#fff'
 const inactiveColor = '#aaa'
-const safeBottom = computed(() => {
-  if (typeof window === 'undefined') return 0
-  const sa = window.document.documentElement.style.getPropertyValue('--sat')
-  if (sa) return parseInt(sa, 10) || 0
-  return 0
-})
 
 // 当前路由命中的 tab
 const computedActive = computed(() => {
@@ -124,6 +131,25 @@ watch(
   () => props.active,
   () => {}
 )
+
+// 监听全局事件，让 Chat 等子组件可以隐藏/显示 TabBar
+// （例如首页 Chat 展开底部工具栏/灵感面板时需要让出空间）
+function handleHideTabbar() {
+  localVisible.value = false
+}
+function handleShowTabbar() {
+  localVisible.value = true
+}
+
+onMounted(() => {
+  window.addEventListener('h5:hide-tabbar', handleHideTabbar)
+  window.addEventListener('h5:show-tabbar', handleShowTabbar)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('h5:hide-tabbar', handleHideTabbar)
+  window.removeEventListener('h5:show-tabbar', handleShowTabbar)
+})
 </script>
 
 <style lang="scss" scoped>

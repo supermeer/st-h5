@@ -41,6 +41,40 @@ export const mockHandlers = {
     openId: 'mock-openid'
   }),
 
+  // Web 端账号登录（邮箱 + 密码）
+  '/api/v1/auth/web/login': (cfg) => {
+    let body = cfg.data
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body) } catch (e) { body = {} }
+    }
+    return {
+      token: 'mock-web-token-' + Date.now(),
+      userId: 10001,
+      user: {
+        id: 10001,
+        uid: '10001',
+        email: body?.email || 'mock@example.com',
+        nickname: '体验用户',
+        status: 1,
+        emailVerified: true,
+        avatarUrl: ''
+      }
+    }
+  },
+
+  // Web 端注册
+  '/api/v1/auth/web/register': (cfg) => {
+    let body = cfg.data
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body) } catch (e) { body = {} }
+    }
+    return {
+      userId: Date.now(),
+      email: body?.email || 'mock@example.com',
+      message: '注册成功，请前往邮箱完成验证（mock）'
+    }
+  },
+
   // 首页默认剧情
   '/api/v1/server/plot/getDefaultPlotMessage': () => ({
     plotId: 100,

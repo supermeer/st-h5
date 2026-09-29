@@ -1050,6 +1050,11 @@ function toggleScene() {
 // 隐藏/显示 TabBar
 function hideTabbar() {
   emit('hideTabbar')
+  // TabBar 隐藏后 Chat 高度变大（外部容器变为 100vh），
+  // 展开的工具栏/灵感面板需要滚动到底部保证最新消息可见
+  nextTick(() => {
+    setTimeout(() => scrollToBottom(true), 50)
+  })
 }
 
 function showTabbar() {
@@ -1078,7 +1083,6 @@ function formatMessage(content) {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #f5f5f5;
   position: relative;
 }
 
@@ -1099,7 +1103,7 @@ function formatMessage(content) {
   top: 0;
   left: 0;
   right: 0;
-  height: 60rpx;
+  height: 200rpx;
   background: linear-gradient(to bottom, rgba(245, 245, 245, 1), rgba(245, 245, 245, 0));
   z-index: 10;
   pointer-events: none;

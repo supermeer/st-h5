@@ -11,6 +11,10 @@ import { useThemeStore } from './store/theme'
 import { wx as wxAdapter } from './utils/wx-adapter'
 import { setupVConsole } from './utils/vconsole'
 import { setupWechat } from './utils/wechat-jssdk'
+import { setupAuthBridge } from './utils/auth-bridge'
+
+// 全局组件
+import CustomNav from '@/components/CustomNav.vue'
 
 // Vant 全局样式
 import 'vant/lib/index.css'
@@ -21,6 +25,9 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
+
+// 全局注册自定义组件
+app.component('CustomNav', CustomNav)
 
 // 全局挂载 wx 适配层（在 Vue 组件和 JS 模块中均可直接使用 wx.xxx）
 app.config.globalProperties.$wx = wxAdapter
@@ -35,9 +42,13 @@ window.addEventListener('h5:auth-required', () => {
   const userStore = useUserStore()
   userStore.clearAuth()
   userStore.setLoginMark(true)
-  // 触发全局登录弹窗（业务方可通过监听此事件来弹出登录页）
+  // 跳转到 web 登录页（由 setupAuthBridge 监听 h5:show-login-modal 处理）
   window.dispatchEvent(new CustomEvent('h5:show-login-modal'))
 })
+
+// 统一鉴权跳转桥接：把 h5:show-login-modal 全局事件统一跳转到 web 登录页
+// 必须在 App mount 之前安装，否则路由未就绪
+setupAuthBridge()
 
 // 模拟小程序 App.onLaunch：恢复用户登录态 + 应用主题
 const userStore = useUserStore()

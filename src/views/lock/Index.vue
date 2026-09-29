@@ -371,8 +371,8 @@ async function onForgot() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 48px env(safe-area-inset-bottom);
-  padding-top: env(safe-area-inset-top);
+  padding: 0 48px var(--safearea-bottom);
+  padding-top: var(--safearea-top);
   background: linear-gradient(180deg, #1a1030 0%, #0f0f1a 50%, #0a0a14 100%);
   color: #fff;
   box-sizing: border-box;
@@ -531,7 +531,7 @@ async function onForgot() {
 
 .lock-footer {
   margin-top: auto;
-  padding-bottom: calc(60px + env(safe-area-inset-bottom));
+  padding-bottom: calc(60px + var(--safearea-bottom));
   display: flex;
   flex-direction: column;
   align-items: center;

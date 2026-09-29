@@ -642,7 +642,7 @@ function onSave() {
   align-items: center;
   gap: 24rpx;
   padding: 24rpx;
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(24rpx + var(--safearea-bottom));
   background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(20px);
   z-index: 50;

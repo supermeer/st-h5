@@ -99,15 +99,19 @@
   --z-popover:   1060;
   --z-tooltip:   1070;
 
-  /* ========== safearea ========== */
-  --safearea-top: env(safe-area-inset-top, 0px);
-  --safearea-bottom: env(safe-area-inset-bottom, 0px);
-  --safearea-left: env(safe-area-inset-left, 0px);
-  --safearea-right: env(safe-area-inset-right, 0px);
+  /* ========== safearea ==========
+     H5 没有原生状态栏；启用 viewport-fit=cover 后浏览器不再自动处理刘海/安全区，
+     必须显式使用 env(safe-area-inset-*) 留出空间。
+     用 max(..., 0px) 兜底兼容老浏览器返回负值的极端情况。*/
+  --safearea-top:    max(env(safe-area-inset-top, 0px), 0px);
+  --safearea-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+  --safearea-left:   max(env(safe-area-inset-left, 0px), 0px);
+  --safearea-right:  max(env(safe-area-inset-right, 0px), 0px);
 
+  /* 复合高度：tabbar / nav 叠加安全区（仅保留实际被引用的几个）*/
   --tabbar-height: 74px;
   --tabbar-height-safearea: calc(var(--tabbar-height) + var(--safearea-bottom));
-
+  /* --nav-height / --nav-height-safearea 保留供 .nav-* 场景按需使用 */
   --nav-height: 44px;
   --nav-height-safearea: calc(var(--nav-height) + var(--safearea-top));
 }

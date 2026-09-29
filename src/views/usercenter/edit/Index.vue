@@ -110,7 +110,7 @@ async function onSave() {
 }
 
 .form-content {
-  padding: 24rpx 24rpx calc(env(safe-area-inset-bottom) + 100rpx);
+  padding: 24rpx 24rpx calc(var(--safearea-bottom) + 100rpx);
 }
 
 .form-section {
@@ -194,7 +194,7 @@ async function onSave() {
 
 .submit-footer {
   background: rgba(20, 20, 30, 0.95);
-  padding: 16rpx 24rpx calc(env(safe-area-inset-bottom, 0px) + 16rpx);
+  padding: 16rpx 24rpx calc(var(--safearea-bottom) + 16rpx);
   border-top: 1rpx solid rgba(255, 255, 255, 0.05);
 }
 

@@ -72,7 +72,7 @@ function onSelect(item) {
 
 <style lang="scss" scoped>
 .create-select-container {
-  padding: 32px 32px calc(env(safe-area-inset-bottom, 0px) + 32px);
+  padding: 32px 32px calc(var(--safearea-bottom) + 32px);
   background: #1f1f28;
   border-radius: 24px 24px 0 0;
   color: #fff;

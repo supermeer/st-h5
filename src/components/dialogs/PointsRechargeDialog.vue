@@ -145,7 +145,7 @@ defineExpose({ show, hide })
   background: #fff;
   border-radius: 24rpx;
   padding: 48rpx 32rpx;
-  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(48rpx + var(--safearea-bottom));
 }
 
 .dialog-close {

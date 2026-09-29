@@ -161,7 +161,7 @@ onMounted(() => {
   min-height: 100vh;
   background: linear-gradient(180deg, #121212 0%, #252525 50%, #252525 100%);
   color: #fff;
-  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(32rpx + var(--safearea-bottom));
 }
 
 .content-container {

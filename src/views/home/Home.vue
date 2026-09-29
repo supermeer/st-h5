@@ -23,7 +23,7 @@
         :show-back="false"
       />
 
-      <!-- 未登录：引导登录 -->
+      <!-- 未登录：onMounted 会自动跳转到登录页，此处仅作兜底渲染 -->
       <div v-else class="welcome">
         <van-button type="primary" round @click="goLogin">登录开启 AI 对话</van-button>
       </div>
@@ -39,6 +39,7 @@ import ChatPlaceholder from '@/components/ChatPlaceholder.vue'
 import { useUserStore } from '@/store/user'
 import { getHomePlotMessage } from '@/api/ai/chat'
 import { getMinorReminderConfig, confirmAdultIdentity } from '@/api/usercenter'
+import { navigateToLogin } from '@/utils/auth-bridge'
 
 const route = useRoute()
 const router = useRouter()
@@ -55,9 +56,30 @@ const showBG = ref(true)
 // refs
 const chatRef = ref(null)
 
+// ===== TabBar 控制 =====
+// 维护本地 tabbarVisible，响应 Chat → InputBox 的 hideTabbar / showTabbar 事件。
+// 隐藏 TabBar 时，聊天区可以占用整个视口（避免被 TabBar 遮挡），
+// 同时通过 window 事件通知 CustomTabBar 组件隐藏自身。
+const tabbarVisible = ref(true)
+const TABBAR_HEIGHT_VAR = '--tabbar-height-safearea'
+
+function hideTabbar() {
+  tabbarVisible.value = false
+  window.dispatchEvent(new CustomEvent('h5:hide-tabbar'))
+}
+
+function showTabbar() {
+  tabbarVisible.value = true
+  window.dispatchEvent(new CustomEvent('h5:show-tabbar'))
+}
+
 // ===== 计算属性 =====
 const pageStyle = computed(() => ({
-  height: '100vh',
+  // TabBar 显示时，给 Chat 留出底部 padding 让内容不被 TabBar 遮挡；
+  // TabBar 隐藏时（InputBox 展开工具栏/灵感面板），让 Chat 占满整个视口。
+  height: tabbarVisible.value
+    ? `calc(100vh - var(${TABBAR_HEIGHT_VAR}))`
+    : '100vh',
   backgroundColor: '#252525',
   backgroundImage: showBG.value && currentBg.value ? `url(${currentBg.value})` : 'none',
   backgroundSize: 'cover',
@@ -77,7 +99,7 @@ onMounted(() => {
   if (userStore.isLogin) {
     onLoginSuccess()
   } else {
-    // 未登录：参照小程序 home.js onShow 中的逻辑，自动弹出登录框
+    // 未登录：直接跳转到登录页（登录成功后会回到首页）
     nextTick(() => {
       goLogin()
     })
@@ -95,6 +117,11 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('h5:user-login-success', onLoginSuccess)
+  // 离开 Home 时确保 TabBar 恢复显示，避免影响其他 tabBar 页面
+  if (!tabbarVisible.value) {
+    tabbarVisible.value = true
+    window.dispatchEvent(new CustomEvent('h5:show-tabbar'))
+  }
 })
 
 // ===== 方法 =====
@@ -163,11 +190,11 @@ function checkMinorReminder() {
 }
 
 /**
- * 显式点击登录按钮
- * 触发全局登录弹窗（由 App.vue 中的 AuthDialog 监听 h5:show-login-modal 处理）
+ * 未登录时跳转到 web 登录页
+ * 通过统一鉴权桥接工具跳转，登录成功后回到当前页面
  */
 function goLogin() {
-  window.dispatchEvent(new CustomEvent('h5:show-login-modal'))
+  navigateToLogin({ redirect: route.fullPath })
 }
 
 /**
@@ -182,14 +209,6 @@ function changePlot({ plotId, type, characterId }) {
   }
 }
 
-// ===== TabBar 控制 =====
-function hideTabbar() {
-  // H5 暂不需要处理
-}
-function showTabbar() {
-  // H5 暂不需要处理
-}
-
 // ===== 背景变化 =====
 function onCurrentBgChange({ bg }) {
   currentBg.value = bg || ''
@@ -201,8 +220,6 @@ function onCurrentBgChange({ bg }) {
 .home-page {
   height: 100vh;
   width: 100vw;
-  background-color: var(--theme-color-black, #252525);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
   overflow: hidden;
 }
 .home-content {

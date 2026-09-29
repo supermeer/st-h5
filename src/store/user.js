@@ -75,11 +75,27 @@ export const useUserStore = defineStore('user', {
 
     // 登录成功后写入 token / 用户信息，并刷新 VIP / 积分
     async setLoginSuccess(payload = {}) {
-      const { user, token, openId } = payload
+      const { user, token, openId, userId } = payload
       if (token) localStorage.setItem('token', token)
       if (openId) localStorage.setItem('openId', openId)
-      if (user) localStorage.setItem('user', JSON.stringify(user))
-      this.userInfo = user || this.userInfo || { ...DEFAULT_USER }
+      // 兼容 web 端邮箱登录的 user 结构（含 email / emailVerified 等字段）
+      // 仅当 user 中包含 email 时才做字段映射，避免覆盖 wx 登录已有的字段
+      let mergedUser = user
+      if (user && user.email) {
+        mergedUser = {
+          ...(this.userInfo || DEFAULT_USER),
+          id: user.id ?? userId ?? this.userInfo?.id ?? null,
+          uid: user.uid ?? this.userInfo?.uid ?? (user.id != null ? String(user.id) : ''),
+          nickname: user.nickname ?? this.userInfo?.nickname ?? '',
+          avatarUrl: user.avatarUrl ?? this.userInfo?.avatarUrl ?? '',
+          email: user.email,
+          emailVerified: user.emailVerified,
+          status: user.status,
+          state: user.state ?? this.userInfo?.state ?? ''
+        }
+      }
+      if (mergedUser) localStorage.setItem('user', JSON.stringify(mergedUser))
+      this.userInfo = mergedUser || this.userInfo || { ...DEFAULT_USER }
       this.loginMark = false
       this.refreshVipInfo()
       this.refreshPointInfo()

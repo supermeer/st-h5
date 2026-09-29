@@ -517,7 +517,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 16px;
   padding: 16px 24px;
-  padding-top: calc(16px + env(safe-area-inset-top));
+  padding-top: calc(16px + var(--safearea-top));
   background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(20px);
   z-index: 100;

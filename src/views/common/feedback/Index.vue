@@ -182,7 +182,7 @@ fetchCategories()
 }
 
 .feedback-form {
-  padding: 24rpx 24rpx calc(120rpx + env(safe-area-inset-bottom, 0px));
+  padding: 24rpx 24rpx calc(120rpx + var(--safearea-bottom));
 }
 
 .page-title {
@@ -313,7 +313,7 @@ fetchCategories()
   right: 0;
   display: flex;
   gap: 16rpx;
-  padding: 16rpx 24rpx calc(env(safe-area-inset-bottom, 0px) + 16rpx);
+  padding: 16rpx 24rpx calc(var(--safearea-bottom) + 16rpx);
   background: rgba(20, 20, 30, 0.96);
   border-top: 1rpx solid rgba(255, 255, 255, 0.05);
 }
