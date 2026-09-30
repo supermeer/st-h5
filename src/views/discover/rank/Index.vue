@@ -80,7 +80,7 @@
         </div>
 
         <div v-if="loadingMore" class="loading-more">
-          <van-loading type="spinner" size="20" color="#FF5F15" /> 加载中...
+          <van-loading type="spinner" size="20" color="#5B00FF" />
         </div>
         <div v-else-if="loadMoreStatus === 2" class="no-more">已加载全部</div>
       </template>

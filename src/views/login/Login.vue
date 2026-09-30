@@ -104,8 +104,8 @@ const onLogin = async () => {
     })
     showToast({ type: 'success', message: '登录成功' })
     // 登录成功后回到上一页或首页
-    // const redirect = router.currentRoute.value.query.redirect
-    // router.replace(redirect || '/pages/home/home')
+    const redirect = router.currentRoute.value.query.redirect
+    router.replace(redirect || '/pages/home/home')
   } catch (err) {
     // http 拦截器已统一 toast 业务错误，这里只需兜底
     console.error('login error', err)

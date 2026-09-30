@@ -137,7 +137,7 @@
 
       <!-- 加载更多 -->
       <div v-if="loading" class="loading-more">
-        <van-loading type="spinner" size="20" color="#FF5F15" /> 加载中...
+        <van-loading type="spinner" size="20" color="#5B00FF" />
       </div>
       <div v-else-if="loadMoreStatus === 2 && (roleList.length > 0 || groupList.length > 0)" class="no-more">
         超多角色正快马赶来，不负期待✨

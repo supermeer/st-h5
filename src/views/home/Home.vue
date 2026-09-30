@@ -1,32 +1,29 @@
 <template>
-  <div class="page home-page" :style="pageStyle">
-    <div class="home-content">
-      <!-- 已登录：渲染 Chat 组件（参照小程序原项目 home.js 中直接挂 <chat> 的逻辑） -->
-      <Chat
-        v-if="isLogin && roleForm.id"
-        ref="chatRef"
-        :role-info="roleForm"
-        :group-info="groupForm"
-        :plot-info="plotInfo"
-        :show-back="false"
-        @hide-tabbar="hideTabbar"
-        @show-tabbar="showTabbar"
-        @current-bg-change="onCurrentBgChange"
-      />
+  <div class="home-page" :style="pageStyle">
+    <!-- 已登录：渲染 Chat 组件（参照小程序原项目 home.js 中直接挂 <chat> 的逻辑） -->
+    <Chat
+      v-if="isLogin && roleForm.id"
+      ref="chatRef"
+      :role-info="roleForm"
+      :group-info="groupForm"
+      :plot-info="plotInfo"
+      :show-back="false"
+      @hide-tabbar="hideTabbar"
+      @show-tabbar="showTabbar"
+    />
 
-      <!-- 已登录但尚无角色：占位（等待 loadHomePlot 拉取中） -->
-      <ChatPlaceholder
-        v-else-if="isLogin"
-        :role-info="roleForm"
-        :group-info="groupForm"
-        :plot-info="plotInfo"
-        :show-back="false"
-      />
+    <!-- 已登录但尚无角色：占位（等待 loadHomePlot 拉取中） -->
+    <ChatPlaceholder
+      v-else-if="isLogin"
+      :role-info="roleForm"
+      :group-info="groupForm"
+      :plot-info="plotInfo"
+      :show-back="false"
+    />
 
-      <!-- 未登录：onMounted 会自动跳转到登录页，此处仅作兜底渲染 -->
-      <div v-else class="welcome">
-        <van-button type="primary" round @click="goLogin">登录开启 AI 对话</van-button>
-      </div>
+    <!-- 未登录：onMounted 会自动跳转到登录页，此处仅作兜底渲染 -->
+    <div v-else class="welcome">
+      <van-button type="primary" round @click="goLogin">登录开启 AI 对话</van-button>
     </div>
   </div>
 </template>
@@ -40,18 +37,18 @@ import { useUserStore } from '@/store/user'
 import { getHomePlotMessage } from '@/api/ai/chat'
 import { getMinorReminderConfig, confirmAdultIdentity } from '@/api/usercenter'
 import { navigateToLogin } from '@/utils/auth-bridge'
+import { useBackgroundStore } from '@/store/background'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const backgroundStore = useBackgroundStore()
 
 // ===== 状态 =====
 const isLogin = ref(false)
 const plotInfo = ref({ id: null, type: '', isGroupChat: false })
 const roleForm = ref({ id: null, type: '', plotId: null })
 const groupForm = ref({ id: null, type: '' })
-const currentBg = ref('')
-const showBG = ref(true)
 
 // refs
 const chatRef = ref(null)
@@ -75,16 +72,15 @@ function showTabbar() {
 
 // ===== 计算属性 =====
 const pageStyle = computed(() => ({
-  // TabBar 显示时，给 Chat 留出底部 padding 让内容不被 TabBar 遮挡；
-  // TabBar 隐藏时（InputBox 展开工具栏/灵感面板），让 Chat 占满整个视口。
-  height: tabbarVisible.value
-    ? `calc(100vh - var(${TABBAR_HEIGHT_VAR}))`
-    : '100vh',
-  backgroundColor: '#252525',
-  backgroundImage: showBG.value && currentBg.value ? `url(${currentBg.value})` : 'none',
-  backgroundSize: 'cover',
-  backgroundPosition: 'center center',
-  backgroundRepeat: 'no-repeat'
+  // 不再 height:100vh，让 window/document 提供滚动
+  // （iOS Safari 在滚动消息列表时会自动收起地址栏）
+  //
+  // TabBar 显示时不需要额外 paddingBottom：
+  // InputBox 已通过 tabbarOffset 把底部空间让出来。
+  // TabBar 隐藏时仍保留 paddingBottom，避免页面最后的内容被遮住的 TabBar 占位。
+  paddingBottom: tabbarVisible.value
+    ? 'var(--tabbar-height)'
+    : `var(${TABBAR_HEIGHT_VAR} + var(--tabbar-height))`
 }))
 
 // ===== 生命周期 =====
@@ -92,7 +88,7 @@ onMounted(() => {
   // 读取 aE 开关（参照小程序 home.js onLoad 中的逻辑）
   const ev = localStorage.getItem('aE')
   if (ev === '0') {
-    showBG.value = false
+    backgroundStore.setEnabled(false)
   }
 
   // 如果已登录，初始化
@@ -107,17 +103,12 @@ onMounted(() => {
 
   // 监听全局登录成功事件
   window.addEventListener('h5:user-login-success', onLoginSuccess)
-
-  // 监听子组件背景变更
-  window.addEventListener('h5:current-bg-change', (e) => {
-    currentBg.value = e.detail?.bg || ''
-    showBG.value = !!currentBg.value
-  })
 })
 
 onUnmounted(() => {
   window.removeEventListener('h5:user-login-success', onLoginSuccess)
   // 离开 Home 时确保 TabBar 恢复显示，避免影响其他 tabBar 页面
+  // 背景清空已由 router.beforeEach 统一处理（App.vue）
   if (!tabbarVisible.value) {
     tabbarVisible.value = true
     window.dispatchEvent(new CustomEvent('h5:show-tabbar'))
@@ -208,26 +199,22 @@ function changePlot({ plotId, type, characterId }) {
     id: characterId
   }
 }
-
-// ===== 背景变化 =====
-function onCurrentBgChange({ bg }) {
-  currentBg.value = bg || ''
-  showBG.value = !!currentBg.value
-}
 </script>
 
 <style lang="scss" scoped>
 .home-page {
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
-.home-content {
+  // 不再 height:100vh + overflow:hidden，让 window/document 提供滚动
+  // （便于 iOS Safari 在滚动消息列表时收起地址栏）
   width: 100%;
-  height: 100%;
+  // 背景图由 App.vue 中的 <AppBackground /> 全局渲染（position: fixed），
+  // 这里不再写 backgroundImage / backgroundAttachment，避免被内容高度拉大。
+  // min-height: 100vh 由 App.vue 的 .app-stack 提供。
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .welcome {
-  height: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;

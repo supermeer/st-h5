@@ -5,7 +5,7 @@
     <div v-if="!loading" class="agreement-content" v-html="agreementContent"></div>
 
     <div v-else class="loading-state">
-      <van-loading type="spinner" size="32" color="#FF5F15">加载中...</van-loading>
+      <van-loading type="spinner" size="32" color="##5B00FF" />
     </div>
   </div>
 </template>

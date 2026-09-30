@@ -1,84 +1,73 @@
 <template>
-  <div 
-    class="chat-wrapper" 
-    :style="{ height: contentHeight }"
-    @touchmove.prevent="preventMove"
-  >
-    <!-- 消息列表 -->
-    <div 
+  <div class="chat-wrapper">
+    <!-- 消息列表（让 window/document 提供滚动，iOS Safari 会自动收起地址栏） -->
+    <div
       class="message-list"
       :class="{ 'scroll-animation': scrollAnimation }"
-      @scroll="onScroll"
-      ref="messageListRef"
     >
       <!-- 顶部渐隐蒙版 -->
       <div v-if="isScrolledUp" class="top-fade-mask"></div>
 
-      <!-- 下拉刷新 -->
-      <van-pull-refresh 
-        v-model="refreshing"
-        pulling-text="下拉加载更多"
-        loading-text="加载中..."
-        @refresh="onRefresh"
-      >
-        <!-- 剧情信息 -->
-        <div v-if="sceneDisplay" class="scene-section">
-          <div class="scene-label">世界观</div>
-          <div class="scene-text" @click="toggleScene">
-            {{ sceneDisplay }}
-            <span v-if="sceneNeedFold" class="scene-toggle">
-              {{ sceneExpanded ? '收起' : '展开' }}
-            </span>
-          </div>
+      <!-- 剧情信息 -->
+      <div v-if="sceneDisplay" class="scene-section">
+        <div class="scene-label">世界观</div>
+        <div class="scene-text" @click="toggleScene">
+          {{ sceneDisplay }}
+          <span v-if="sceneNeedFold" class="scene-toggle">
+            {{ sceneExpanded ? '收起' : '展开' }}
+          </span>
         </div>
+      </div>
 
-        <!-- 消息列表 -->
-        <div 
-          v-for="(msg, idx) in msgList" 
-          :key="msg.id || idx"
-          :id="`msg-${msg.id}`"
-          class="message-item"
-        >
-          <!-- AI 角色消息 -->
-          <RoleMsg
-            v-if="msg.senderType === 2"
-            :message="msg"
-            :role-detail="roleDetail"
-            :group-detail="groupDetail"
-            :plot-info="plotInfo"
-            :is-latest="idx === msgList.length - 1"
-            :disabled="isGenerating"
-            @button-click="onButtonClick"
-            @mask-show="onMaskShow"
-            @retry="onRetryMessage"
-            @role-click="onRoleClick"
-          />
-          
-          <!-- 用户消息 -->
-          <UserMsg
-            v-else
-            :message="msg"
-            :disabled="isGenerating"
-            @button-click="onButtonClick"
-            @mask-show="onMaskShow"
-            @retry="onRetryMessage"
-          />
-        </div>
-      </van-pull-refresh>
+      <!-- 消息列表 -->
+      <div
+        v-for="(msg, idx) in msgList"
+        :key="msg.id || idx"
+        :id="`msg-${msg.id}`"
+        class="message-item"
+      >
+        <!-- AI 角色消息 -->
+        <RoleMsg
+          v-if="msg.senderType === 2"
+          :message="msg"
+          :role-detail="roleDetail"
+          :group-detail="groupDetail"
+          :plot-info="plotInfo"
+          :is-latest="idx === msgList.length - 1"
+          :disabled="isGenerating"
+          @button-click="onButtonClick"
+          @mask-show="onMaskShow"
+          @retry="onRetryMessage"
+          @role-click="onRoleClick"
+        />
+
+        <!-- 用户消息 -->
+        <UserMsg
+          v-else
+          :message="msg"
+          :disabled="isGenerating"
+          @button-click="onButtonClick"
+          @mask-show="onMaskShow"
+          @retry="onRetryMessage"
+        />
+      </div>
 
       <!-- 底部锚点 -->
       <div id="bottom-anchor" class="bottom-anchor"></div>
+
+      <!-- 底部留白，避免最后一条消息被浮动的 InputBox 遮挡 -->
+      <div class="input-safe-area"></div>
     </div>
 
     <!-- 底部蒙版按钮 -->
-    <div 
-      v-if="maskVisible" 
-      class="mask-overlay" 
+    <div
+      v-if="maskVisible"
+      class="mask-overlay"
       @click="hideMask"
     ></div>
-    
-    <div 
-      v-if="maskVisible" 
+
+    <div
+      v-if="maskVisible"
       class="mask-buttons"
       :style="{
         top: maskButtonTop + 'px',
@@ -88,25 +77,25 @@
       @click.stop="stopPropagation"
     >
       <template v-if="currentMessageType === 'role'">
-        <div 
-          class="mask-btn" 
+        <div
+          class="mask-btn"
           data-action="rollback"
           @click="onMaskButtonClick"
         >回溯</div>
-        <div 
-          class="mask-btn" 
+        <div
+          class="mask-btn"
           data-action="newPlot"
           @click="onMaskButtonClick"
         >新剧情</div>
-        <div 
-          class="mask-btn" 
+        <div
+          class="mask-btn"
           data-action="copy"
           @click="onMaskButtonClick"
         >复制</div>
       </template>
       <template v-else>
-        <div 
-          class="mask-btn" 
+        <div
+          class="mask-btn"
           data-action="copy"
           @click="onMaskButtonClick"
         >复制</div>
@@ -123,20 +112,26 @@
       <div class="free-copy-content">{{ freeCopyContent }}</div>
     </van-dialog>
 
-    <!-- 输入框 -->
-    <InputBox
-      :plot-info="plotInfo"
-      :role-info="roleInfo"
-      :group-info="groupInfo"
-      :disabled="isGenerating"
-      :placeholder="inputPlaceholder"
-      @send-message="onSendMessage"
-      @keyboard-height-change="onKeyboardHeightChange"
-      @input-line-change="onInputLineChange"
-      @hide-tabbar="hideTabbar"
-      @show-tabbar="showTabbar"
-      @button-click="onInputButtonClick"
-    />
+    <!-- 输入框（fixed 浮动在底部，window/document 提供滚动） -->
+    <div
+      class="input-box-fixed"
+      :class="{ 'with-keyboard': keyboardHeight > 0 }"
+      :style="{ bottom: inputBoxBottom }"
+    >
+      <InputBox
+        :plot-info="plotInfo"
+        :role-info="roleInfo"
+        :group-info="groupInfo"
+        :disabled="isGenerating"
+        :placeholder="inputPlaceholder"
+        @send-message="onSendMessage"
+        @keyboard-height-change="onKeyboardHeightChange"
+        @input-line-change="onInputLineChange"
+        @hide-tabbar="hideTabbar"
+        @show-tabbar="showTabbar"
+        @button-click="onInputButtonClick"
+      />
+    </div>
 
     <!-- 弹窗组件 -->
     <TipDialog ref="tipDialogRef" />
@@ -163,7 +158,7 @@ import ModelSheet from '@/components/dialogs/ModelSheet.vue'
 import PointsRechargeDialog from '@/components/dialogs/PointsRechargeDialog.vue'
 import ModelErrDialog from '@/components/dialogs/ModelErrDialog.vue'
 
-import { 
+import {
   sendMessage,
   createPlot,
   getPlotMessage,
@@ -175,7 +170,7 @@ import {
   retellMessage,
   setCurrentMessage
 } from '@/api/ai/chat'
-import { 
+import {
   getCharacterDetail,
   getCharacterDetailByParams,
   getCurrentPlotByCharacterId
@@ -184,6 +179,7 @@ import { getGroupDetailByParams, getCurrentPlotByGroupChatId } from '@/api/group
 import { getModelList, getGlobalModelId, setGlobalModel } from '@/api/usercenter'
 import { useRouter } from 'vue-router'
 import { formatMessage as formatMessageUtil } from '@/utils/msgHandler'
+import { useBackgroundStore } from '@/store/background'
 
 const props = defineProps({
   roleInfo: {
@@ -211,11 +207,13 @@ const props = defineProps({
 const emit = defineEmits([
   'hideTabbar',
   'showTabbar',
-  'currentBgChange',
   'retryMessage'
 ])
 
 const router = useRouter()
+
+// 全局背景 store：剧情背景图统一由 <AppBackground /> 渲染，这里只负责写入
+const backgroundStore = useBackgroundStore()
 
 // 状态
 const msgList = ref([])
@@ -224,7 +222,6 @@ const groupDetail = ref({ name: '', avatarUrl: '', description: '', roles: [] })
 const currentStoryDetail = ref({})
 const chatDetail = ref({ plotId: null, updateTime: null })
 const keyboardHeight = ref(0)
-const contentHeight = ref('100%')
 const scrollAnimation = ref(true)
 const isGenerating = ref(false)
 const userScrolled = ref(false)
@@ -268,6 +265,7 @@ const modelErrDialogRef = ref(null)
 let _lastScrollTop = 0
 let _lastAutoScrollTime = 0
 let _isAutoScrolling = false
+let _isLoadingMore = false // 防止 onRefresh 被并发触发
 let _autoScrollTimer = null
 let _maskEnableTimer = null
 let _maskDisabledUntil = 0
@@ -279,10 +277,13 @@ const isGroupChat = computed(() => props.plotInfo?.isGroupChat || !!props.groupI
 onMounted(() => {
   getChatInfo()
   initKeyboardListener()
+  // window scroll 监听：让 iOS Safari 在滚动消息列表时自动收起地址栏
+  window.addEventListener('scroll', onScroll, { passive: true })
 })
 
 onUnmounted(() => {
   removeKeyboardListener()
+  window.removeEventListener('scroll', onScroll)
 })
 
 // 监听 roleInfo.id 变化（参照小程序 observers: { 'roleInfo.id' }）
@@ -347,7 +348,8 @@ async function getChatInfo() {
 
     // 处理剧情信息
     const bg = res.backgroundImage || res.defaultStoryDetail?.defaultBackgroundImage || ''
-    emit('currentBgChange', { bg })
+    // 背景统一交给全局 <AppBackground /> 渲染（position: fixed 铺满视口）
+    backgroundStore.setBg(bg)
 
     // 处理剧情文本折叠
     const scene = currentStoryDetail.value.scene || ''
@@ -420,7 +422,8 @@ async function onRefresh() {
   }
 
   const nextPage = pagination.value.current + 1
-  
+  refreshing.value = true
+
   try {
     const res = await getPlotMessage({
       size: pagination.value.size,
@@ -438,7 +441,7 @@ async function onRefresh() {
         ...msg,
         htmlContent: msg.senderType === 2 ? formatMessage(msg.content) : undefined
       }))
-      
+
       const topMsg = msgList.value[0]
       msgList.value = [...messages, ...msgList.value]
       pagination.value.current = res.current || nextPage
@@ -690,10 +693,10 @@ function handleModelStatus(obj) {
   }
 }
 
-// 滚动到底部
+// 滚动到底部（用 window.scrollTo，iOS Safari 会响应并收起地址栏）
 function scrollToBottom(force = false) {
   const now = Date.now()
-  
+
   if (!force) {
     if (_lastAutoScrollTime && now - _lastAutoScrollTime < 120) return
     if (_isAutoScrolling) return
@@ -703,11 +706,13 @@ function scrollToBottom(force = false) {
   _isAutoScrolling = true
 
   nextTick(() => {
-    const bottomEl = document.getElementById('bottom-anchor')
-    if (bottomEl) {
-      bottomEl.scrollIntoView({ behavior: force ? 'auto' : 'smooth' })
-    }
-    
+    // 计算底部位置：document.documentElement.scrollHeight - window.innerHeight
+    const docEl = document.documentElement
+    const scrollBody = docEl.scrollHeight || document.body.scrollHeight
+    const viewport = window.innerHeight
+    const targetTop = Math.max(0, scrollBody - viewport)
+    window.scrollTo({ top: targetTop, behavior: force ? 'auto' : 'smooth' })
+
     setTimeout(() => {
       _isAutoScrolling = false
     }, 300)
@@ -724,12 +729,11 @@ function scrollToView(id) {
   })
 }
 
-// 滚动事件处理
-function onScroll(e) {
-  const target = e.target
-  const scrollTop = target?.scrollTop || 0
-  const scrollHeight = target?.scrollHeight || 0
-  const clientHeight = target?.clientHeight || 0
+// 滚动事件处理（监听 window 滚动，让 iOS Safari 收起地址栏）
+function onScroll() {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop || 0
+  const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight
+  const clientHeight = window.innerHeight
 
   // 隐藏蒙版
   if (maskVisible.value) {
@@ -743,7 +747,7 @@ function onScroll(e) {
 // 处理滚动状态
 function handleScrollState(scrollTop, scrollHeight, viewHeight) {
   const isScrollable = scrollHeight > viewHeight + 1
-  
+
   if (!isScrollable) {
     setMaskState(false)
     return
@@ -761,6 +765,13 @@ function handleScrollState(scrollTop, scrollHeight, viewHeight) {
   // 顶部阈值
   if (scrollTop <= 8) {
     setMaskState(false)
+    // 触顶自动加载更多（参照小程序下拉刷新行为）
+    if (hasMore.value && !refreshing.value && !_isLoadingMore) {
+      _isLoadingMore = true
+      onRefresh().finally(() => {
+        _isLoadingMore = false
+      })
+    }
   } else if (Math.abs(delta) > 5) {
     if (delta > 0) {
       setMaskState(true)
@@ -1001,10 +1012,8 @@ function onRetryMessage({ messageId } = {}) {
 function onKeyboardHeightChange(height) {
   keyboardHeight.value = height
   if (height > 0) {
-    contentHeight.value = `calc(100% - ${height}px)`
+    // 键盘弹出时滚动到底部，确保最新消息可见
     setTimeout(() => scrollToBottom(true), 400)
-  } else {
-    contentHeight.value = '100%'
   }
 }
 
@@ -1033,11 +1042,6 @@ function stopPropagation(e) {
   e.stopPropagation()
 }
 
-// 阻止滚动穿透
-function preventMove() {
-  return false
-}
-
 // 折叠/展开剧情文本
 function toggleScene() {
   sceneExpanded.value = !sceneExpanded.value
@@ -1047,19 +1051,32 @@ function toggleScene() {
     : scene
 }
 
+// 维护本地 tabbarVisible，响应 Chat → InputBox 的 hideTabbar / showTabbar 事件
+const tabbarVisible = ref(true)
+
 // 隐藏/显示 TabBar
 function hideTabbar() {
+  tabbarVisible.value = false
   emit('hideTabbar')
-  // TabBar 隐藏后 Chat 高度变大（外部容器变为 100vh），
-  // 展开的工具栏/灵感面板需要滚动到底部保证最新消息可见
+  // TabBar 隐藏后展开的工具栏/灵感面板需要滚动到底部保证最新消息可见
   nextTick(() => {
     setTimeout(() => scrollToBottom(true), 50)
   })
 }
 
 function showTabbar() {
+  tabbarVisible.value = true
   emit('showTabbar')
 }
+
+// 计算 InputBox 的 bottom：键盘弹起时用键盘高度，否则交给浏览器解析
+// CSS 变量 --tabbar-height-safearea（包含 vw 与 env()，JS 端无法直接 parseFloat）。
+const inputBoxBottom = computed(() => {
+  if (keyboardHeight.value > 0) {
+    return `${keyboardHeight.value}px`
+  }
+  return tabbarVisible.value ? 'var(--tabbar-height-safearea)' : '0'
+})
 
 // 格式化消息（HTML 转换），使用完整的 msgHandler（参照小程序 utils/msgHandler.js）
 function formatMessage(content) {
@@ -1080,26 +1097,60 @@ function formatMessage(content) {
 
 <style lang="scss" scoped>
 .chat-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   position: relative;
+  // 不再限制高度，让内容自然撑开；window/document 提供滚动
+  min-height: 100vh;
 }
 
 .message-list {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  // 不再 overflow-y:auto，让 window/document 提供滚动，让 iOS Safari 自动收起地址栏
   padding-bottom: 20rpx;
-  
+
   &.scroll-animation {
     scroll-behavior: smooth;
   }
 }
 
+// 顶部"加载更多"提示条（已移除视觉提示，仅在 handleScrollState 中触发）
+
+
+.bottom-anchor {
+  height: 20rpx;
+}
+
+// 底部安全区，给浮动的输入框留位置，避免最后一条消息被遮挡
+.input-safe-area {
+  // InputBox 默认高度（~140px）+ TabBar 高度（CSS 变量）
+  // TabBar 隐藏时不会增加 input-box-fixed 的 bottom，但仍需保留 InputBox 高度的安全区
+  height: calc(280rpx + var(--tabbar-height-safearea, 0px));
+}
+
+// 输入框固定在底部（fixed 布局）
+.input-box-fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0; // 默认 0，键盘弹出时通过 inline style 设为键盘高度
+  // CustomTabBar 的 z-index 是 999，InputBox 必须在它之上
+  // 否则聊天输入框会被底部导航栏遮挡
+  z-index: 1000;
+  // InputBox 自带半透明背景（rgba(255,255,255,0.2)），但容器本身需要不透明背景
+  // 才能在视觉上盖住下面的 TabBar 区域（TabBar 区域是 InputBox 容器的一部分，
+  // 因为 InputBox 的 bottom 在 TabBar 可见时设为了 var(--tabbar-height-safearea)，
+  // 容器底部会延伸到 TabBar 上方）
+  // background: #1f1f1f; // 与 Home.vue 的背景色保持一致
+  // 默认保留安全区
+  // padding-bottom: env(safe-area-inset-bottom);
+  transition: bottom 0.2s ease-out;
+
+  // 键盘弹起时，不再保留底部安全区（已被键盘盖住）
+  &.with-keyboard {
+    padding-bottom: 0;
+  }
+}
+
 .top-fade-mask {
-  position: sticky;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -1135,10 +1186,6 @@ function formatMessage(content) {
 
 .message-item {
   margin-bottom: 8rpx;
-}
-
-.bottom-anchor {
-  height: 20rpx;
 }
 
 .mask-overlay {

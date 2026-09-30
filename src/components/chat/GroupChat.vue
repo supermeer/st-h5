@@ -116,8 +116,7 @@ const props = defineProps({
 
 const emit = defineEmits([
   'hideTabbar',
-  'showTabbar',
-  'currentBgChange'
+  'showTabbar'
 ])
 
 // 状态
@@ -155,7 +154,7 @@ function initGroup() {
   if (props.groupInfo.roles) {
     roles.value = [...props.groupInfo.roles]
   }
-  emit('currentBgChange', { bg: '' })
+  // 群聊页目前统一不用剧情背景；如需启用，调用 backgroundStore.setBg(bg) 即可
 }
 
 // 角色点击

@@ -35,8 +35,7 @@
           </div>
 
           <div v-if="loadingMore" class="loading-more">
-            <van-loading type="spinner" color="#FF5F15" size="20" />
-            <span>加载中...</span>
+            <van-loading type="spinner" color="#5B00FF" size="20" />
           </div>
           <div v-else-if="loadMoreStatus === 2 && themeList.length > 0" class="no-more">
             已加载全部主题

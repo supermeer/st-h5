@@ -4,7 +4,7 @@
     :class="{ 'msg-error': message.error }"
   >
     <!-- 角色头像 -->
-    <div class="avatar-wrap" @click="onRoleClick">
+    <div v-if="showRoleName" class="avatar-wrap" @click="onRoleClick">
       <img
         v-if="avatarUrl"
         :src="avatarUrl"
@@ -37,7 +37,7 @@
       <!-- 气泡内容 -->
       <div
         :id="`msg-content-${message.id}`"
-        class="bubble"
+        class="bubble blur-glass"
         :class="{ loading: message.loading }"
         @click="onBubbleClick"
         @longpress="onLongPress"
@@ -124,7 +124,7 @@ const roleName = computed(() => {
 })
 
 const showRoleName = computed(() => {
-  return !props.groupDetail.id && roleName.value
+  return props.groupDetail.id
 })
 
 const htmlContent = computed(() => {
@@ -198,8 +198,8 @@ function onAvatarError(e) {
 <style lang="scss" scoped>
 .role-msg-wrapper {
   display: flex;
-  padding: 24rpx 32rpx;
-  gap: 20rpx;
+  padding: 8rpx 32rpx 8rpx 12rpx;
+  gap: 8rpx;
   align-items: flex-start;
 
   &.msg-error {
@@ -212,8 +212,8 @@ function onAvatarError(e) {
 }
 
 .avatar {
-  width: 80rpx;
-  height: 80rpx;
+  width: 40rpx;
+  height: 40rpx;
   border-radius: 50%;
   object-fit: cover;
 
@@ -223,7 +223,7 @@ function onAvatarError(e) {
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 32rpx;
+    font-size: 16rpx;
     font-weight: bold;
   }
 }
@@ -234,10 +234,9 @@ function onAvatarError(e) {
 }
 
 .role-name {
-  font-size: 24rpx;
+  font-size: 16rpx;
   color: #999;
   margin-bottom: 8rpx;
-  padding-left: 16rpx;
 }
 
 .think-section {
@@ -270,8 +269,8 @@ function onAvatarError(e) {
 }
 
 .think-content {
-  padding: 0 16rpx 16rpx;
-  font-size: 26rpx;
+  padding: 0 8rpx 8rpx;
+  font-size: 14rpx;
   color: #888;
   max-height: 300rpx;
   overflow-y: auto;
@@ -280,13 +279,10 @@ function onAvatarError(e) {
 .bubble {
   display: inline-block;
   max-width: 100%;
-  padding: 24rpx 32rpx;
-  background: #fff;
-  border-radius: 24rpx;
-  border-top-left-radius: 8rpx;
-  font-size: 30rpx;
-  line-height: 1.6;
+  padding: 8rpx 12rpx;
+  font-size: 16rpx;
   word-break: break-word;
+  border-radius: 12rpx;
 
   &.loading {
     min-width: 120rpx;

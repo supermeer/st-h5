@@ -97,7 +97,7 @@
 
         <!-- 加载更多 -->
         <div v-if="loadMoreStatus === 1" class="loading-more">
-          <van-loading type="spinner" size="24px">加载中...</van-loading>
+          <van-loading type="spinner" size="24px" color="#5B00FF" />
         </div>
         <div v-if="loadMoreStatus === 2 && roleList.length" class="no-more">
           已加载全部

@@ -1,7 +1,7 @@
 <template>
   <div class="chat-placeholder">
     <div class="chat-loading">
-      <van-loading type="spinner" color="#FF5F15">加载中...</van-loading>
+      <van-loading type="spinner" color="#5B00FF" />
     </div>
     <div class="chat-tip">
       <text class="ai-tip">星语酒馆 - AI 对话聊天</text>

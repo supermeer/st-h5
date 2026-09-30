@@ -66,7 +66,7 @@
 
       <!-- 加载中 -->
       <div v-else class="loading-state">
-        <van-loading color="#FF5F15">加载中...</van-loading>
+        <van-loading color="#5B00FF" />
       </div>
     </div>
   </div>

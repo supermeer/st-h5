@@ -24,7 +24,7 @@
         
         <!-- 文字消息 -->
         <template v-if="message.content">
-          <div class="msg-text">{{ message.content }}</div>
+          <div class="msg-text blur-glass">{{ message.content }}</div>
         </template>
       </div>
 
@@ -36,7 +36,7 @@
     </div>
 
     <!-- 用户头像 -->
-    <div class="avatar-wrap">
+    <div v-if="showUserName" class="avatar-wrap">
       <img
         v-if="userAvatar"
         :src="userAvatar"
@@ -72,6 +72,10 @@ const emit = defineEmits([
 
 const userAvatar = ref('')
 const userName = ref('')
+
+const showUserName = computed(() => {
+  return props.groupDetail.id
+})
 
 const images = computed(() => {
   if (!props.message.images) return []
@@ -147,8 +151,8 @@ try {
 <style lang="scss" scoped>
 .user-msg-wrapper {
   display: flex;
-  padding: 24rpx 32rpx;
-  gap: 20rpx;
+  padding: 8rpx 32rpx 8rpx 12rpx;
+  gap: 8rpx;
   align-items: flex-start;
   flex-direction: row-reverse;
 }
@@ -197,7 +201,7 @@ try {
   align-items: center;
   gap: 12rpx;
   margin-top: 8rpx;
-  font-size: 24rpx;
+  font-size: 16rpx;
   color: #999;
 }
 
@@ -212,8 +216,8 @@ try {
 }
 
 .avatar {
-  width: 80rpx;
-  height: 80rpx;
+  width: 40rpx;
+  height: 40rpx;
   border-radius: 50%;
   object-fit: cover;
 
@@ -223,7 +227,7 @@ try {
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 32rpx;
+    font-size: 16rpx;
     font-weight: bold;
   }
 }

@@ -12,7 +12,7 @@ const routes = [
     path: '/pages/home/home',
     name: 'Home',
     component: () => import('@/views/home/Home.vue'),
-    meta: { title: '首页', tabBar: true, index: 0 }
+    meta: { title: '首页', tabBar: true, index: 0, bgScope: 'chat' }
   },
   {
     path: '/pages/discover/index',
@@ -198,7 +198,7 @@ const routes = [
     path: '/pages/group/chat/index',
     name: 'GroupChat',
     component: () => import('@/views/group/chat/Index.vue'),
-    meta: { title: '群聊' }
+    meta: { title: '群聊', bgScope: 'chat' }
   },
   {
     path: '/pages/group/detail/index',
@@ -288,7 +288,7 @@ const routes = [
     path: '/pages/chat/index',
     name: 'Chat',
     component: () => import('@/views/chat/Index.vue'),
-    meta: { title: '聊天' }
+    meta: { title: '聊天', bgScope: 'chat' }
   },
 
   // ===== 分包：discover =====

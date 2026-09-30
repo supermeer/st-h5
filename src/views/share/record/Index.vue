@@ -25,8 +25,7 @@
           </div>
 
           <div v-if="loadingMore" class="loading-more">
-            <van-loading type="spinner" size="20" color="#FF5F15" />
-            <span>加载中...</span>
+            <van-loading type="spinner" size="20" color="#5B00FF" />
           </div>
           <div v-else-if="!hasMore && recordList.length > 0" class="no-more">没有更多了</div>
         </div>
